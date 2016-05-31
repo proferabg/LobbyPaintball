@@ -1,0 +1,167 @@
+Options:
+  Announce: 10
+  Limit: 20
+  Regen_Time: 20
+  Paint: true
+  Paint_Radius: 3
+  SpigotHack: false
+  Set_Item: true
+  ClearOnJoin: true
+Items:
+  '1':
+    Name: "&1&9&8&9&bSnow&3Shot"
+    Lores:
+      - &6Shoot snowballs out of the bow!"
+      - "&1 "
+      - "&aShoot players to earn points"
+      - "&aor shoot blocks to color them!"
+    ID: 417
+    Type: SINGLE
+    Power: 2
+    Cooldown: 3
+    Permission: "lpb.snowshot"
+  '2':
+    Name: "&9&8&9&1&bBurst&3Shot"
+    Lores:
+      - "&6Burst Fires snowballs out of the bow!"
+      - "&1 "
+      - "&aShoot players to earn points"
+      - "&aor shoot blocks to color them!"
+    ID: 418
+    Type: BURST
+    Spread: 0.2
+    Shots: 5
+    Power: 2
+    Cooldown: 10
+    Permission: "lpb.burstshot"
+  '3':
+    Name: "&1&9&8&9&bRapid&3Shot"
+    Lores:
+      - "&6Rapid Fires snowballs out of the bow!"
+      - "&1 "
+      - "&aShoot players to earn points"
+      - "&aor shoot blocks to color them!"
+    ID: 419
+    Type: RAPID
+    Shots: 8
+    Power: 2
+    Speed: 0.3
+    Cooldown: 60
+    Permission: "lpb.rapidshot"
+  '4':
+    Name: "&1&9&8&9&5Disco&3Stick"
+    Lores:
+      - "&6Hit players to send"
+      - "&6them flying very far"
+    ID: 280
+    Type: STICK
+    Power: 50
+    Cooldown: 5
+    Permission: "lpb.staff"
+  OPTIN:
+    Name: "&1&9&8&9&aPlay Paintball"
+    Lores: 
+      - "&6Right click to play paintball!"
+    ID: 399
+    Type: OPTIN
+    Cooldown: 10
+  OPTOUT:
+    Name: "&1&9&8&9&cLeave Paintball"
+    Lores: 
+      - "&6Right click to leave paintball!"
+    ID: 399
+    Type: OPTOUT
+    Cooldown: 10
+Layout:
+  '0': 1
+  '1': 2
+  '2': 3
+  '3': 4
+  '5': OPTIN
+Blocks:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 24
+  - 35
+  - 41
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 53
+  - 56
+  - 57
+  - 58
+  - 67
+  - 73
+  - 74
+  - 78
+  - 79
+  - 80
+  - 82
+  - 86
+  - 87
+  - 88
+  - 89
+  - 91
+  - 92
+  - 95
+  - 97
+  - 98
+  - 99
+  - 100
+  - 103
+  - 108
+  - 109
+  - 110
+  - 112
+  - 114
+  - 121
+  - 123
+  - 124
+  - 125
+  - 126
+  - 128
+  - 129
+  - 133
+  - 134
+  - 135
+  - 136
+  - 152
+  - 153
+  - 155
+  - 156
+  - 159
+  - 161
+  - 162
+  - 163
+  - 164
+  - 165
+  - 168
+  - 169
+  - 170
+  - 171
+  - 172
+  - 173
+  - 174
+  - 179
+  - 180
+  - 181
+  - 182
+  
