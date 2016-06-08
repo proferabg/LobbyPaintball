@@ -11,6 +11,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.FireworkEffect.Type;
+import org.bukkit.Sound;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -148,6 +149,7 @@ public class PlayerHandler {
 		Snowball sb = (Snowball) p.getWorld().spawn(p.getLocation().add(0, 1.3, 0), Snowball.class);
 		sb.setShooter(p);
 		sb.setVelocity(p.getLocation().getDirection().normalize().multiply(power));
+		p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0);
 	}
 	
 	public static void burst(Player p, int power, int num, double spread){
@@ -164,6 +166,7 @@ public class PlayerHandler {
 			else if (r.nextInt(6) + 1 == 5) sb.setVelocity(p.getLocation().getDirection().normalize().multiply(2).add(new Vector(-r.nextDouble()*spread, -r.nextDouble()*spread, r.nextDouble()*spread)));
 			else if (r.nextInt(6) + 1 == 7) sb.setVelocity(p.getLocation().getDirection().normalize().multiply(2).add(new Vector(-r.nextDouble()*spread, r.nextDouble()*spread, -r.nextDouble()*spread)));
 			else sb.setVelocity(p.getLocation().getDirection().normalize().multiply(2).add(new Vector(r.nextDouble()*spread, 0, r.nextDouble()*spread)));
+			p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, 0);
 		}
 	}
 	
