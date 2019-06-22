@@ -18,6 +18,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.cpx1989.lpb.Events.EntityDamageByEntityEvents;
+import com.cpx1989.lpb.Events.EntityDamageEvents;
 import com.cpx1989.lpb.Events.HangingBreakByEntityEvents;
 import com.cpx1989.lpb.Events.InventoryClickEvents;
 import com.cpx1989.lpb.Events.PlayerDropItemEvents;
@@ -76,6 +77,7 @@ public class Paintball extends JavaPlugin {
 		pm.registerEvents(new PlayerJoinEvents(), this);
 		pm.registerEvents(new PlayerQuitEvents(), this);
 		pm.registerEvents(new ProjectileHitEvents(), this);
+		pm.registerEvents(new EntityDamageEvents(), this);
 		
 		new BlockHandler(this);
 		new VanishHook(this);

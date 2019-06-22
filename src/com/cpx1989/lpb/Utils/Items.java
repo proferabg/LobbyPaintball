@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.cpx1989.lpb.Paintball;
@@ -39,7 +40,7 @@ public class Items {
 						t = t1;
 					}
 				}
-				int id = Paintball.cfg.getInt("Items."+i+".ID");
+				String id = Paintball.cfg.getString("Items."+i+".ID");
 				Item item = new Item(i, name, fin_lores, t, id);
 				if (Paintball.cfg.isSet("Items."+i+".Data")){
 					item.setData((byte) Paintball.cfg.getInt("Items."+i+".Data"));
@@ -77,7 +78,7 @@ public class Items {
 		for (String s : lores){
 			fin_lores.add(ChatColor.translateAlternateColorCodes('&', s));
 		}
-		int id = Paintball.cfg.getInt("Items.OPTIN.ID");
+		String id = Paintball.cfg.getString("Items.OPTIN.ID");
 		Item item = new Item(1000, name, fin_lores, t, id);
 		if (Paintball.cfg.isSet("Items.OPTIN.Data")){
 			item.setData((byte) Paintball.cfg.getInt("Items.OPTIN.Data"));
@@ -100,7 +101,7 @@ public class Items {
 		for (String s : lores){
 			fin_lores.add(ChatColor.translateAlternateColorCodes('&', s));
 		}
-		int id = Paintball.cfg.getInt("Items.OPTOUT.ID");
+		String id = Paintball.cfg.getString("Items.OPTOUT.ID");
 		Item item = new Item(1001, name, fin_lores, t, id);
 		if (Paintball.cfg.isSet("Items.OPTOUT.Data")){
 			item.setData((byte) Paintball.cfg.getInt("Items.OPTOUT.Data"));

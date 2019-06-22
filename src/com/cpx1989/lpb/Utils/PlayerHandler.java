@@ -81,7 +81,8 @@ public class PlayerHandler {
 	}
 	
 	public static void joinGame(Player p){
-		TitleAPI.setTitle(p, ChatColor.GOLD + "Welcome to Paintball", ChatColor.DARK_AQUA + "Made for TownCraft.us", 1, 3, 1);
+		int Timer = Paintball.cfg.getInt("Options.TitleTimer");
+		TitleAPI.sendTitle(p, 2, Timer, 2, ChatColor.GOLD + "Welcome to Paintball", ChatColor.DARK_AQUA + "Made for TownCraft.us");
 		PlayerInventory inv = p.getInventory();
 		inv.remove(Items.getOptIn());
 		invs.put(p, inv.getContents());

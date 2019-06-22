@@ -1,5 +1,6 @@
 package com.cpx1989.lpb;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -10,200 +11,111 @@ import org.bukkit.entity.Player;
 
 public class TitleAPI {
 	
-	static Class<?> craftplayer, packtitle, pack, chatser, ichat, cct;
-	@SuppressWarnings("rawtypes")
-	static Class<Enum> enumtitle;
-	static Method csm, etm;
+    public static void sendPacket(Player player, Object packet) {
+        try {
+            Object handle = player.getClass().getMethod("getHandle").invoke(player);
+            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
+            playerConnection.getClass().getMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection, packet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public enum TitleEnum{
-		TITLE, SUBTITLE, TIMES, RESET, CLEAR;
-	}
-	
-	public static void setTitle(Player player, String title, String subtitle, int fIn, int dur, int fOut){
-		if (subtitle != null){
-			subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
-			setTitle(player, subtitle, 2);
-		}
-		if (fIn > -1 && fOut > -1 && dur > -1 && title != null){
-			title = ChatColor.translateAlternateColorCodes('&', title);
-			setTitleTimes(player, title, fIn, dur, fOut);
-		} else if (fIn > -1 && fOut > -1 && dur > -1){
-			setTimes(player, fIn, dur, fOut);
-		} else if (title != null){
-			title = ChatColor.translateAlternateColorCodes('&', title);
-			setTitle(player, title, 1);
-		}
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void setTitleTimes(Player player, String title, int fIn, int dur, int fOut) {
-		try {
-			String nmsver = Bukkit.getServer().getClass().getPackage().getName();
-			nmsver = nmsver.substring(nmsver.lastIndexOf(".") + 1);
-			craftplayer = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");
-	    	packtitle = Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle");
-	    	pack = Class.forName("net.minecraft.server." + nmsver + ".Packet");
-	    	Object p = craftplayer.cast(player);
-    		Object ppot = null;
-    		Object enumf = null;
-	    	Object cbc = null;
-			if (nmsver.equalsIgnoreCase("v1_8_R1")) {
-		    	enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".EnumTitleAction");
-		    	etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-	    		enumf = enumtitle.cast(etm.invoke(enumtitle, "title"));
-		    	chatser = Class.forName("net.minecraft.server." + nmsver + ".ChatSerializer");
-			} else if (nmsver.startsWith("v1_8_") || nmsver.startsWith("v1_9_")){
-				enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle$EnumTitleAction");
-		    	etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-	    		enumf = enumtitle.cast(etm.invoke(enumtitle, "title"));
-		    	chatser = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent$ChatSerializer");
-			} else {
-				Paintball.instance.logger.warning("The Minecraft Title feature is only available in MC 1.8+");
-				return;
-			}
-	    	ichat = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
-	    	csm = chatser.getDeclaredMethod("a", new Class<?>[] {String.class});
-    		cbc = ichat.cast(csm.invoke(chatser, "{\"text\": \"" + title + "\"}"));
-			ppot = packtitle.getConstructor(new Class<?>[] {enumtitle, ichat, int.class, int.class, int.class}).newInstance(new Object[] {enumf, cbc, fIn, dur, fOut});
-    		Method m1 = craftplayer.getDeclaredMethod("getHandle", new Class<?>[] {});
-    		Object h = m1.invoke(p);
-    		Field f1 = h.getClass().getDeclaredField("playerConnection");
-    		Object pc = f1.get(h);
-    		Method m5 = pc.getClass().getDeclaredMethod("sendPacket",new Class<?>[] {pack});
-    		m5.invoke(pc, ppot);
-		} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
-	}
+    public static Class<?> getNMSClass(String name) {
+        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+        try {
+            return Class.forName("net.minecraft.server." + version + "." + name);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	private static void setTimes(Player player, int fIn, int dur, int fOut) {
-		try {
-    		Object p = craftplayer.cast(player);
-    		Object ppot = null;
-    		ppot = packtitle.getConstructor(new Class<?>[] {int.class, int.class, int.class}).newInstance(new Object[] {fIn, dur, fOut});
-    		Method m1 = craftplayer.getDeclaredMethod("getHandle", new Class<?>[] {});
-    		Object h = m1.invoke(p);
-    		Field f1 = h.getClass().getDeclaredField("playerConnection");
-    		Object pc = f1.get(h);
-    		Method m5 = pc.getClass().getDeclaredMethod("sendPacket",new Class<?>[] {pack});
-    		m5.invoke(pc, ppot);
-		} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
-	}
+    public static void sendTitle(Player player, Integer fadeIn, Integer stay, Integer fadeOut, String title, String subtitle) {
+        try {
+            Object e;
+            Object chatTitle;
+            Object chatSubtitle;
+            Constructor subtitleConstructor;
+            Object titlePacket;
+            Object subtitlePacket;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void setTitle(Player player, String s, int i){
-		String nmsver = Bukkit.getServer().getClass().getPackage().getName();
-		nmsver = nmsver.substring(nmsver.lastIndexOf(".") + 1);
-		String m;
-		if (i == 2) m = "subtitle";
-		else m = "title";
-		try {
-			craftplayer = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");
-	    	packtitle = Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle");
-	    	pack = Class.forName("net.minecraft.server." + nmsver + ".Packet");
-    		Object p = craftplayer.cast(player);
-    		Object ppot = null;
-    		Object cbc = null;
-    		Object enumf = null;
-			if (nmsver.equalsIgnoreCase("v1_8_R1")) {
-				enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".EnumTitleAction");
-				etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-				enumf = enumtitle.cast(etm.invoke(enumtitle, m));
-		    	chatser = Class.forName("net.minecraft.server." + nmsver + ".ChatSerializer");
-			} else if(nmsver.startsWith("v1_8_")){
-				enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle$EnumTitleAction");
-		    	etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-	    		enumf = enumtitle.cast(etm.invoke(enumtitle, m));
-		    	chatser = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent$ChatSerializer");
-			} else {
-				Paintball.instance.logger.warning("The Minecraft Title feature is only available in MC 1.8+");
-				return;
-			}
-	    	ichat = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
-	    	csm = chatser.getDeclaredMethod("a", new Class<?>[] {String.class});
-    		cbc = ichat.cast(csm.invoke(chatser, "{\"text\": \"" + s + "\"}"));
-    		ppot = packtitle.getConstructor(new Class<?>[] {enumtitle, ichat}).newInstance(new Object[] {enumf, cbc});
-    		Method m1 = craftplayer.getDeclaredMethod("getHandle", new Class<?>[] {});
-    		Object h = m1.invoke(p);
-    		Field f1 = h.getClass().getDeclaredField("playerConnection");
-    		Object pc = f1.get(h);
-    		Method m5 = pc.getClass().getDeclaredMethod("sendPacket",new Class<?>[] {pack});
-    		m5.invoke(pc, ppot);
-		} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void clear(Player player){
-		try {
-			String nmsver = Bukkit.getServer().getClass().getPackage().getName();
-			nmsver = nmsver.substring(nmsver.lastIndexOf(".") + 1);
-			craftplayer = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");
-	    	packtitle = Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle");
-	    	pack = Class.forName("net.minecraft.server." + nmsver + ".Packet");
-    		Object p = craftplayer.cast(player);
-    		Object ppot = null;
-    		Object enumf = null;
-    		if (nmsver.equalsIgnoreCase("v1_8_R1")) {
-				enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".EnumTitleAction");
-				etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-				enumf = enumtitle.cast(etm.invoke(enumtitle, "clear"));
-			} else if(nmsver.startsWith("v1_8_")){
-				enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle$EnumTitleAction");
-		    	etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-	    		enumf = enumtitle.cast(etm.invoke(enumtitle, "clear"));
-			} else {
-				Paintball.instance.logger.warning("The Minecraft Title feature is only available in MC 1.8+");
-				return;
-			}
-    		ppot = packtitle.getConstructor(new Class<?>[] {enumtitle, ichat}).newInstance(new Object[] {enumf, null});
-    		Method m1 = craftplayer.getDeclaredMethod("getHandle", new Class<?>[] {});
-    		Object h = m1.invoke(p);
-    		Field f1 = h.getClass().getDeclaredField("playerConnection");
-    		Object pc = f1.get(h);
-    		Method m5 = pc.getClass().getDeclaredMethod("sendPacket",new Class<?>[] {pack});
-    		m5.invoke(pc, ppot);
-		} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void reset(Player player){
-		try {
-			String nmsver = Bukkit.getServer().getClass().getPackage().getName();
-			nmsver = nmsver.substring(nmsver.lastIndexOf(".") + 1);
-			craftplayer = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");
-	    	packtitle = Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle");
-	    	pack = Class.forName("net.minecraft.server." + nmsver + ".Packet");
-    		Object p = craftplayer.cast(player);
-    		Object ppot = null;
-    		Object enumf = null;
-    		if (nmsver.equalsIgnoreCase("v1_8_R1")) {
-				enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".EnumTitleAction");
-				etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-				enumf = enumtitle.cast(etm.invoke(enumtitle, "reset"));
-			} else if(nmsver.startsWith("v1_8_")){
-				enumtitle = (Class<Enum>) Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutTitle$EnumTitleAction");
-		    	etm = enumtitle.getMethod("a", new Class<?>[] {String.class});
-	    		enumf = enumtitle.cast(etm.invoke(enumtitle, "reset"));
-			} else {
-				Paintball.instance.logger.warning("The Minecraft Title feature is only available in MC 1.8+");
-				return;
-			}
-    		ppot = packtitle.getConstructor(new Class<?>[] {enumtitle, ichat}).newInstance(new Object[] {enumf, null});
-    		Method m1 = craftplayer.getDeclaredMethod("getHandle", new Class<?>[] {});
-    		Object h = m1.invoke(p);
-    		Field f1 = h.getClass().getDeclaredField("playerConnection");
-    		Object pc = f1.get(h);
-    		Method m5 = pc.getClass().getDeclaredMethod("sendPacket",new Class<?>[] {pack});
-    		m5.invoke(pc, ppot);
-		} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
-	}
+            if (title != null) {
+                title = ChatColor.translateAlternateColorCodes('&', title);
+                title = title.replaceAll("%player%", player.getDisplayName());
+                // Times packets
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get((Object) null);
+                chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + title + "\"}"});
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE});
+                titlePacket = subtitleConstructor.newInstance(new Object[]{e, chatTitle, fadeIn, stay, fadeOut});
+                sendPacket(player, titlePacket);
+
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get((Object) null);
+                chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + title + "\"}"});
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent")});
+                titlePacket = subtitleConstructor.newInstance(new Object[]{e, chatTitle});
+                sendPacket(player, titlePacket);
+            }
+
+            if (subtitle != null) {
+                subtitle = ChatColor.translateAlternateColorCodes('&', subtitle);
+                subtitle = subtitle.replaceAll("%player%", player.getDisplayName());
+                // Times packets
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get((Object) null);
+                chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + title + "\"}"});
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE});
+                subtitlePacket = subtitleConstructor.newInstance(new Object[]{e, chatSubtitle, fadeIn, stay, fadeOut});
+                sendPacket(player, subtitlePacket);
+
+                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get((Object) null);
+                chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke((Object) null, new Object[]{"{\"text\":\"" + subtitle + "\"}"});
+                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(new Class[]{getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE});
+                subtitlePacket = subtitleConstructor.newInstance(new Object[]{e, chatSubtitle, fadeIn, stay, fadeOut});
+                sendPacket(player, subtitlePacket);
+            }
+        } catch (Exception var11) {
+            var11.printStackTrace();
+        }
+    }
+
+    public static void clearTitle(Player player) {
+        sendTitle(player, 0, 0, 0, "", "");
+    }
+
+    public static void sendTabTitle(Player player, String header, String footer) {
+        if (header == null) header = "";
+        header = ChatColor.translateAlternateColorCodes('&', header);
+
+        if (footer == null) footer = "";
+        footer = ChatColor.translateAlternateColorCodes('&', footer);
+
+        header = header.replaceAll("%player%", player.getDisplayName());
+        footer = footer.replaceAll("%player%", player.getDisplayName());
+
+        try {
+            Object tabHeader = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + header + "\"}");
+            Object tabFooter = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + footer + "\"}");
+            Constructor<?> titleConstructor = getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor();
+            Object packet = titleConstructor.newInstance();
+            try {
+                Field aField = packet.getClass().getDeclaredField("a");
+                aField.setAccessible(true);
+                aField.set(packet, tabHeader);
+                Field bField = packet.getClass().getDeclaredField("b");
+                bField.setAccessible(true);
+                bField.set(packet, tabFooter);
+            } catch (Exception e) {
+                Field aField = packet.getClass().getDeclaredField("header");
+                aField.setAccessible(true);
+                aField.set(packet, tabHeader);
+                Field bField = packet.getClass().getDeclaredField("footer");
+                bField.setAccessible(true);
+                bField.set(packet, tabFooter);
+            }
+            sendPacket(player, packet);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
 }

@@ -2,6 +2,7 @@ package com.cpx1989.lpb.Utils;
 
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,7 +16,7 @@ public class Item {
 	String name;
 	List<String> lores;
 	ItemType type;
-	int id;
+	String id;
 	byte data;
 	int power;
 	int cooldown;
@@ -26,7 +27,7 @@ public class Item {
 	
 	
 	
-	public Item(int index, String name, List<String> lores, ItemType type, int id){
+	public Item(int index, String name, List<String> lores, ItemType type, String id){
 		this.index = index;
 		this.name = name;
 		this.lores = lores;
@@ -34,7 +35,7 @@ public class Item {
 		this.id = id;
 	}
 	
-	public void setID(int id){
+	public void setID(String id){
 		this.id = id;
 	}
 	
@@ -82,7 +83,7 @@ public class Item {
 		this.speed = speed;
 	}
 	
-	public int getID(){
+	public String getID(){
 		return this.id;
 	}
 	
@@ -132,7 +133,7 @@ public class Item {
 	
 	@SuppressWarnings("deprecation")
 	public ItemStack getItemStack(){
-		ItemStack is = new ItemStack(this.id);
+		ItemStack is = new ItemStack(Material.valueOf(id));
 		if (this.data > -1){
 			MaterialData md = is.getData();
 			md.setData(this.data);

@@ -32,7 +32,7 @@ public class PlayerJoinEvents implements Listener {
 			if (inv.getLeggings() != null && inv.getLeggings().getType() != Material.AIR){
 				inv.setLeggings(new ItemStack(Material.AIR));
 			}
-			for (Item i :Items.items.values()){
+			for (Item i : Items.items.values()){
 				if(inv.contains(i.getItemStack())){
 					inv.remove(i.getItemStack());
 				}

@@ -18,32 +18,38 @@ public class ActionBarAPI {
 			return;
 		}
 		try {
-    		Class<?> c1 = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");
-    		Object p = c1.cast(player);
-    		Object ppoc = null;
-    		Class<?> c4 = Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutChat");
-    		Class<?> c5 = Class.forName("net.minecraft.server." + nmsver + ".Packet");
-    		if (nmsver.equalsIgnoreCase("v1_8_R1") || (!nmsver.startsWith("v1_8_") && !nmsver.startsWith("v1_9_"))) {
-        		Class<?> c2 = Class.forName("net.minecraft.server." + nmsver + ".ChatSerializer");
-        		Class<?> c3 = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
-        		Method m3 = c2.getDeclaredMethod("a", new Class<?>[] {String.class});
-        		Object cbc = c3.cast(m3.invoke(c2, "{\"text\": \"" + message + "\"}"));
-        		ppoc = c4.getConstructor(new Class<?>[] {c3, byte.class}).newInstance(new Object[] {cbc, (byte) 2});
-    		} else {
-    			Class<?> c2 = Class.forName("net.minecraft.server." + nmsver + ".ChatComponentText");
-        		Class<?> c3 = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
-    			Object o = c2.getConstructor(new Class<?>[] {String.class}).newInstance(new Object[] {message});
-        		ppoc = c4.getConstructor(new Class<?>[] {c3, byte.class}).newInstance(new Object[] {o, (byte) 2});
-    		}
-    		Method m1 = c1.getDeclaredMethod("getHandle", new Class<?>[] {});
-    		Object h = m1.invoke(p);
-    		Field f1 = h.getClass().getDeclaredField("playerConnection");
-    		Object pc = f1.get(h);
-    		Method m5 = pc.getClass().getDeclaredMethod("sendPacket",new Class<?>[] {c5});
-    		m5.invoke(pc, ppoc);
-    	} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
+			Class<?> craftPlayerClass = Class.forName("org.bukkit.craftbukkit." + nmsver + ".entity.CraftPlayer");
+	        Object craftPlayer = craftPlayerClass.cast(player);
+	        Object packet;
+	        Class<?> packetPlayOutChatClass = Class.forName("net.minecraft.server." + nmsver + ".PacketPlayOutChat");
+	        Class<?> packetClass = Class.forName("net.minecraft.server." + nmsver + ".Packet");
+	        
+	        Class<?> chatComponentTextClass = Class.forName("net.minecraft.server." + nmsver + ".ChatComponentText");
+	        Class<?> iChatBaseComponentClass = Class.forName("net.minecraft.server." + nmsver + ".IChatBaseComponent");
+	        try {
+	            Class<?> chatMessageTypeClass = Class.forName("net.minecraft.server." + nmsver + ".ChatMessageType");
+	            Object[] chatMessageTypes = chatMessageTypeClass.getEnumConstants();
+	            Object chatMessageType = null;
+	            for (Object obj : chatMessageTypes) {
+	                if (obj.toString().equals("GAME_INFO")) {
+	                    chatMessageType = obj;
+	                }
+	            }
+	            Object chatCompontentText = chatComponentTextClass.getConstructor(new Class<?>[]{String.class}).newInstance(message);
+	            packet = packetPlayOutChatClass.getConstructor(new Class<?>[]{iChatBaseComponentClass, chatMessageTypeClass}).newInstance(chatCompontentText, chatMessageType);
+	        } catch (ClassNotFoundException cnfe) {
+	            Object chatCompontentText = chatComponentTextClass.getConstructor(new Class<?>[]{String.class}).newInstance(message);
+	            packet = packetPlayOutChatClass.getConstructor(new Class<?>[]{iChatBaseComponentClass, byte.class}).newInstance(chatCompontentText, (byte) 2);
+	        }
+	        Method craftPlayerHandleMethod = craftPlayerClass.getDeclaredMethod("getHandle");
+	        Object craftPlayerHandle = craftPlayerHandleMethod.invoke(craftPlayer);
+	        Field playerConnectionField = craftPlayerHandle.getClass().getDeclaredField("playerConnection");
+	        Object playerConnection = playerConnectionField.get(craftPlayerHandle);
+	        Method sendPacketMethod = playerConnection.getClass().getDeclaredMethod("sendPacket", packetClass);
+	        sendPacketMethod.invoke(playerConnection, packet);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
     }
 	
 	public static void clearActionBar(Player player){
