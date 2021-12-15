@@ -1,0 +1,22 @@
+name: LobbyPaintball
+version: 1.4
+api-version: 1.16
+authors: [proferabg]
+description: Just another paintball plugin...Revamped!
+main: com.probgtech.lpb.Paintball
+softdepend:
+ - VanishNoPacket
+commands:
+  lpb:
+    description: LobbyPaintball
+    aliases: [lp, lpball]
+permissions:
+  lpb.reload:
+    default: false
+  lpb.moveinventory:
+    default: false
+  lpb.staff:
+    default: false
+    children:
+      - lpb.moveinventory
+      - lpb.reload
