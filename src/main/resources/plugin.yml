@@ -1,6 +1,6 @@
 name: LobbyPaintball
-version: 1.4
-api-version: 1.16
+version: 1.4.1
+api-version: 1.18
 authors: [proferabg]
 description: Just another paintball plugin...Revamped!
 main: com.probgtech.lpb.Paintball
